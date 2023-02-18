@@ -61,9 +61,18 @@ Before running a backtest on the strategy, various asset weight regimes are deve
 ![](./FIGURES/10.png)
 
 ## Portfolio Management - Backtest Results
-### Optimal allocation:
+### Feasible Portfolio Hyperbola
+![](./FIGURES/14.png)
+### Optimal Return-to-risk weight allocation:
 ![](./FIGURES/11.png)
-### Equity Curve:
+### Optimal Return-to-risk Equity Curve:
 ![](./FIGURES/12.png)
-### Risk Contribution:
+### Optimal Return-to-risk Risk Contribution:
 ![](./FIGURES/13.png)
+
+### Lowest risk weight allocation:
+![](./FIGURES/15.png)
+### Lowest Risk Equity Curve:
+![](./FIGURES/16.png)
+### Lowest Risk, Risk Contribution:
+![](./FIGURES/17.png)
