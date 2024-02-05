@@ -1,22 +1,22 @@
 # Investment Portfolio Strategy Using Machine Learning Techniques
 ![](./FIGURES/0.png)
 ## Project Description
-This is a portfolio building strategy that combines machine learning to create predictive learning algorithms, features engineering statistics, and portfolio management strategies in order to beat the market benchmark S&P 500 (^GSPC). Its main features include:
+This is a portfolio building strategy that combines machine learning to predict stock price up/down movements. It employs features engineering statistics and portfolio management strategies. Its main features include:
 
 * A PostgreSQL database where stock data for a vast number of equities are stored
 * Features engineering and data transtormation through the application of Principal Component Analysis (PCA)
-* A search for tradeable stocks from the database based on the Sharpe, Sortino, and other criteria
-* A trading strategy created using the following machine learning algorithms:
+* A search for tradeable stocks from the database 
+* An investment strategy selecting stocks that exhibit a negative skew in their log-normal return distributions and positive high Sortino ratios 
+* Portfolio asset allocation and risk management following the CAPM framework, as well as the mean-variance-skewness-kurtosis and VaR criteria
+* Also included, a tool created to predict up/down price movements using the following machine learning algorithms:
   * SVR (Support Vector Regressor)
   * LDA (Linear Discriminant Analysis) 
   * QDA (Quadratic Discriminant Analysis)
-* The use of ensemble methods to select the most profitable stocks
-* Portfolio Risk Management employing the mean-variance-skewness-kurtosis criterion
 
 ## Data Import & Storage
 The list of all S&P500 tickers is obtained and downloaded to the the Symbol table using the ticker_fetch.ipynb. It uses bs4.BeautifulSoup(response.text) to convert table into text.
  
-Notebook price_import_to_db.ipynb imports daily prices for the last 3 years for all 503 tickers to the database via financialmodelingprep API.
+Notebook price_import_to_db.ipynb imports daily prices for the last 20 years for all 503 tickers to the database via financialmodelingprep API.
 
 All data was then accessible from the securities_master, which was created in PostgreSQL using the schema shown below:
 
@@ -25,54 +25,46 @@ All data was then accessible from the securities_master, which was created in Po
 ## Asset Selection
 For the strategy, only assets with the following characteristics will be selected:
 
-* The adjusted returns exhibit a standard deviation less than the median value for all assets
-* The skewness and kurtosis of the adjusted returns distributions are as close as possible to those of a normal distribution (i.e, skewness close to 0, and kurtosis close to 3)
+* The log-normal adjusted returns distribution exhibit a negative (right) skew
+* High Sortino Ratios
 
-![](./FIGURES/02.png)
-![](./FIGURES/03.png)
-![](./FIGURES/04.png)
+## Asset Allocation
+The minimum variance portfolio (MVP) and efficient frontier are evaluated for the assets selected in three different ways:
+* Random asset alocation algorithm
+* Analytical solution to Markowitz Portfolio Theory
+* Numerical optimization of all feasible portfolios according to Markowitz Portfolio Theory
 
-## Forecasting Trade
-The strategy is as follows:
+![](./FIGURES/03.png.png)
 
-1.  Fit a forecasting model to a data subset of the assest above (training set).
+### Portfolio Management - Backtest Results
+### Optimal Return-to-risk weight allocation:
+![](./FIGURES/11.png.png)
+### Optimal Return-to-risk Equity Curve:
+![](./FIGURES/12.png.png)
+### Optimal Return-to-risk Drawdown:
+![](./FIGURES/13.png.png)
+
+### High Sortino Ratio weight allocation:
+![](./FIGURES/14.png.png)
+### High Sortino Ratio Equity Curve:
+![](./FIGURES/15.png.png)
+### High Sortino Ratio Drawdown:
+![](./FIGURES/16.png.png)
+
+## Forecasting Trade Tool
+The tool works as follows:
+
+1.  Fits a forecasting model to a data subset of the assest above (training set).
  
     * The features_engineering function is used to generate moving averages to be used as features along with volume for a principal component analysis (PCA) to reduce input variables.
 
-    * Several regression models are used individually to observe their individual goodness of fit through the use of r2
+    * Several regression models are used individually to observe their individual goodness of fit through r2
 
-    * An ensemble model is used to combine the best model results
+2.  Uses simple moving average [5,10,20,60] of adjusted closing returns data as a predictor for tomorrow’s returns. 
+    * If the returns are predicted as positive then = 1 
+    * If the returns are predicted as negative then = -1
 
-2.  Use simple moving average [5,10,20,60] of adjusted closing returns data as a predictor for tomorrow’s returns. 
-    * If the returns are predicted as positive then go long. 
-    * If the returns are predicted as negative then exit.
+### Up/Down Forecast for ADBE 
+![](./FIGURES/17.png.png)
 
-### Regression Model Results -- Selecting Only Positive
-![](./FIGURES/05.png)
-![](./FIGURES/06.png)
 
-### Strategy Forecast - Equity curves and Returns Distribution
-![](./FIGURES/07.png)
-![](./FIGURES/08.png)
-![](./FIGURES/09.png)
-
-## Portfolio Management - Weights Allocation Algorithm
-Before running a backtest on the strategy, various asset weight regimes are developed through a linear change in weights. The code  iterates through multiple possibilities of slope "m" which making sure the total sum of weights equals 1.
-![](./FIGURES/10.png)
-
-## Portfolio Management - Backtest Results
-### Feasible Portfolio Hyperbola
-![](./FIGURES/14.png)
-### Optimal Return-to-risk weight allocation:
-![](./FIGURES/11.png)
-### Optimal Return-to-risk Equity Curve:
-![](./FIGURES/12.png)
-### Optimal Return-to-risk Risk Contribution:
-![](./FIGURES/13.png)
-
-### Lowest risk weight allocation:
-![](./FIGURES/15.png)
-### Lowest Risk Equity Curve:
-![](./FIGURES/16.png)
-### Lowest Risk, Risk Contribution:
-![](./FIGURES/17.png)
